@@ -2,4 +2,27 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  background-color: orange;
+}
+
+
+div.note {
+  height: 150px;
+  width: 150px;
+  background-color: yellow;
+  margin: 2px 0;
+  position: relative;
+  cursor: -webkit-grab;
+  -webkit-box-shadow: 5px 5px 15px 0 rgba(0, 0, .2);
+  box-shadow: 5px 5px 15px 0 rgba(0, 0, .2);
+}
+
+dix.note:active{
+  cursor: -webkit-grab;
+}
+
+div.note p {
+  font: size 22px;
+  padding: 5px;
+  font-family: Arial, Helvetica, sans-serif;
 }

@@ -11,6 +11,7 @@ class Note extends Component {
         }
         this.edit = this.edit.bind(this)
         this.remove = this.remove.bind(this)
+        this.save = this.save.bind(this)
         this.renderForm = this.renderForm.bind(this)
         this.renderDisplay = this.renderDisplay.bind(this)
     }
@@ -21,6 +22,17 @@ class Note extends Component {
     edit() {
         this.setState({
             editing:true
+        })
+    }
+
+    /**
+     * 
+     */
+    save(e) {
+        e.preventDefault()
+        this.props.onChange(this._newText.value, this.props.index)
+        this.setState({
+            editing: false
         })
     }
 
@@ -37,9 +49,9 @@ class Note extends Component {
     renderForm() {
         return (
             <div className="note">
-                <form>
-                    <textarea />
-                    <button><FaFloppyO/></button>
+                <form onSubmit={this.save}>
+                    <textarea ref={input => {this._newText = input}} />
+                    <button type="submit" ><FaFloppyO/></button>
                 </form>
             </div>
         )
@@ -51,7 +63,7 @@ class Note extends Component {
     renderDisplay () {
         return (
             <div className="note">
-                <p> React Tuts </p>
+                <p> {this.props.children} </p>
                 <span>
                     <button onClick={this.edit} id="edit"><FaPencil/> </button>
                     <button onClick={this.remove} id="remove"><FaTrash /> </button>
@@ -64,12 +76,7 @@ class Note extends Component {
      * Render fucn
      */
     render() {
-        if(this.state.editing){
-            return this.renderForm()
-        }
-        else {
-            return this.renderDisplay()
-        }
+        return this.state.editing ? this.renderForm() : this.renderDisplay()
     }
 }
 
