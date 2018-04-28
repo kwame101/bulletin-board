@@ -14,6 +14,41 @@ class Note extends Component {
         this.save = this.save.bind(this)
         this.renderForm = this.renderForm.bind(this)
         this.renderDisplay = this.renderDisplay.bind(this)
+        this.randomBetween = this.randomBetween.bind(this)
+    }
+
+    /**
+     * When component mount display 
+     */
+    componentWillMount() {
+        this.style = {
+            right: this.randomBetween(0, window.innerWidth - 150, 'px'),
+            top: this.randomBetween(0, window.innerHeight - 150, 'px'),
+            transform: `rotate(${this.randomBetween(-25, 25, 'deg')})`
+        }
+    }
+
+    /**
+     * Set note text area to focus
+     */
+    componentDidMount() {
+        let textArea 
+        if(this.state.editing){
+            textArea = this._newText
+            textArea.focus()
+            textArea.select()
+        }
+    }
+
+    /**
+     * if component state change rerender 
+     */
+    shouldComponentUpdate(nextProps, nextState) {
+        //ensure that something has change in the component
+        //either props or state
+        return (
+            this.props.children !== nextProps.children || this.state !== nextState
+        )
     }
 
     /**
@@ -26,7 +61,17 @@ class Note extends Component {
     }
 
     /**
-     * 
+     * Random position of each note
+     * @param {x cordinated} x 
+     * @param {y cordinate} y 
+     * @param {size in pixels, rem or deg} s 
+     */
+    randomBetween(x, y, s){
+        return x + Math.ceil(Math.random() * (y-x)) + s
+    }
+
+    /**
+     * Save an edit note
      */
     save(e) {
         e.preventDefault()
@@ -40,7 +85,7 @@ class Note extends Component {
      * Remove the note from the board
      */
     remove() {
-
+        this.props.onRemove(this.props.index)
     }
 
     /**
@@ -48,10 +93,11 @@ class Note extends Component {
      */
     renderForm() {
         return (
-            <div className="note">
+            <div className="note" style={this.style}>
                 <form onSubmit={this.save}>
-                    <textarea ref={input => {this._newText = input}} />
-                    <button type="submit" ><FaFloppyO/></button>
+                    <textarea ref={input => {this._newText = input}} 
+                        defaultValue={this.props.children}/>
+                    <button id="save" type="submit" ><FaFloppyO/></button>
                 </form>
             </div>
         )
@@ -62,7 +108,7 @@ class Note extends Component {
      */
     renderDisplay () {
         return (
-            <div className="note">
+            <div className="note" style={this.style}>
                 <p> {this.props.children} </p>
                 <span>
                     <button onClick={this.edit} id="edit"><FaPencil/> </button>

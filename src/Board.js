@@ -1,40 +1,67 @@
 import React, {Component} from 'react'
 import Note from './Note'
+import FaPlus from 'react-icons/lib/fa/plus'
 
 class Board extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            notes: [
-                {
-                    id: 0,
-                    note: "testing text"
-                },
-                {
-                    id: 1,
-                    note: "reactive data"
-                }
-            ]
+            notes: []
         }
         this.getNote = this.getNote.bind(this)
         this.update = this.update.bind(this)
+        this.remove = this.remove.bind(this)
+        this.addNote = this.addNote.bind(this)
+        this.increamentId = this.increamentId.bind(this)
     }
 
     /**
-     * List all aviable notes
-     * 
-     * @param {* note we getting} note 
-     * @param {* index of that note} i 
+     * Pouplate data into notes array
      */
-    getNote(note, i) {
-        //forech note
-        return (
-            <Note key={i}
-                index={i}
-                onChange={this.update}>
-                {note.note}
-            </Note>
-        )
+    componentWillMount() {
+        const self = this
+        if(this.props.count){
+            fetch(`https://baconipsum.com/api/?type=all-meat&sentences=${this.props.count}`)
+                .then(response => response.json())
+                .then(json => json[0].split('. ').forEach(
+                    sentence => self.addNote(sentence.substring(0, 25))
+                ))
+        }
+    }
+
+    /**
+     * Increament an id
+     */
+    increamentId() {
+        this.uniqueId = this.uniqueId || 0
+        return this.uniqueId++
+    }
+
+    /**
+     * Add new note
+     * @param {input text to add} text 
+     */
+    addNote(text) {
+        this.setState(prevState => ({
+            notes: [
+                ...prevState.notes,
+                {
+                    id: this.increamentId(),
+                    note: text
+                }
+            ]
+        }))
+    }
+
+    /**
+     * Remove a note
+     * @param {index of the note} id 
+     */
+    remove (id) {
+        console.log(id)
+        this.setState(prevState => ({
+            notes: prevState.notes.filter(note => note.id !== id)
+        }))
     }
 
     /**
@@ -51,10 +78,31 @@ class Board extends Component {
         }))
     }
 
+    /**
+  * List all aviable notes
+  * 
+  * @param {* note we getting} note 
+  * @param {* index of that note} i 
+  */
+    getNote(note, i) {
+        //forech note
+        return (
+            <Note key={note.id}
+                index={note.id}
+                onChange={this.update}
+                onRemove={this.remove}>
+                {note.note}
+            </Note>
+        )
+    }
+
     render () {
         return (
             <div className="board">
                 {this.state.notes.map(this.getNote)}
+                <button onClick={this.addNote.bind(null, "New Note")}
+                id="add"><FaPlus/>
+                </button>
             </div>
         )
     }
